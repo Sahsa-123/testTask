@@ -1,0 +1,1 @@
+export { FavPage } from "./FavPage"
