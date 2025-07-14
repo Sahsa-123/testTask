@@ -33,14 +33,14 @@ export const Header: React.FC = () => {
 						<MenuIcon />
 					</IconButton>
 					
-          <Typography variant="h5" component="h1" sx={{ flexGrow: 1 }}>
-            <Link to={"/"}>КиноNet</Link>
-          </Typography>
+				<Typography variant="h5" component="h1" sx={{ flexGrow: 1 }}>
+					<Link to={"/"}>КиноNet</Link>
+				</Typography>
 
 
-					<IconButton color="inherit" sx={{ ml: 2 }} onClick={() => setFilterOpen(open => !open)}>
-						<FilterAltIcon />
-					</IconButton>
+				<IconButton color="inherit" sx={{ ml: 2 }} onClick={() => setFilterOpen(open => !open)}>
+					<FilterAltIcon />
+				</IconButton>
 				</Toolbar>
 			</AppBar>
 
@@ -48,10 +48,10 @@ export const Header: React.FC = () => {
 
 			{filterOpen && (
 				<FiltersPanel
-          genres={GENRES}
-          searchParams={searchParams}
-          setSearchParams={setSearchParams}
-        />
+				genres={GENRES}
+				searchParams={searchParams}
+				setSearchParams={setSearchParams}
+				/>
 			)}
 		</>
 	);
