@@ -13,7 +13,6 @@ export const fetchMovies = async ({
   queryKey: (string | Filters)[];
   pageParam?: number;
 }): Promise<CardItemClientType[]> => {
-  // Безопасно приводим второй элемент queryKey к фильтрам
   const filters = (queryKey[1] || {}) as Filters;
 
   const url = new URL("https://api.kinopoisk.dev/v1.4/movie");
@@ -25,15 +24,12 @@ export const fetchMovies = async ({
     .forEach(field => url.searchParams.append("notNullFields", field));
   url.searchParams.append("rating.imdb", "1-10");
 
-  // Жанры
   filters.genres?.forEach(genre => {
     url.searchParams.append("genres.name", `+${genre}`);
   });
-  // Рейтинг
   if (filters.rating && /^\d+(\.\d+)?-\d+(\.\d+)?$/.test(filters.rating)) {
     url.searchParams.set("rating.imdb", filters.rating);
   }
-  // Годы
   if (filters.years && /^\d{4}-\d{4}$/.test(filters.years)) {
     url.searchParams.set("year", filters.years);
   }
@@ -49,8 +45,8 @@ export const fetchMovies = async ({
   const docs = data.docs.map((doc: any) => {
     try {
       return CardItemServerToClient(CardItemServerSchema.parse(doc));
-    } catch (e) {
-      console.error("Ошибка парсинга карточки фильма:", e, doc);
+    } catch {
+      // console.error("Ошибка парсинга карточки фильма:", e, doc);
       return null;
     }
   }).filter(Boolean);

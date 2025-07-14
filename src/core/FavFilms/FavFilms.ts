@@ -17,35 +17,29 @@ export class FavouriteFilms {
     }
   }
 
-  /** Добавить фильм в избранное */
   add(id: string | number) {
     this.map.set(String(id), true);
     this.save();
   }
 
-  /** Удалить фильм из избранного */
   remove(id: string | number) {
     this.map.delete(String(id));
     this.save();
   }
 
-  /** Получить массив id избранных фильмов */
   get(): string[] {
     return Array.from(this.map.keys());
   }
 
-  /** Проверить, есть ли фильм в избранном */
   has(id: string | number) {
     return this.map.has(String(id));
   }
 
-  /** Сбросить избранное (например, если всё удалили) */
   clear() {
     this.map.clear();
     localStorage.removeItem(LS_KEY);
   }
 
-  /** Сохранить Map в LS */
   private save() {
     if (this.map.size === 0) {
       localStorage.removeItem(LS_KEY);

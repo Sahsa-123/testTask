@@ -11,16 +11,15 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { FavouriteFilms } from "../../../core/FavFilms/FavFilms";
 import { useState } from "react";
+import { LoadErrorMessage } from "../../../core/components/LoadError";
 
+const fav = new FavouriteFilms();
 
 export const FilmPage = () => {
   const { id } = useParams();
-    console.log(id)
   const { state } = useLocation();
-  const fav = new FavouriteFilms();
   const [isFav, setIsFav] = useState(fav.has(id||""));
 
-  // Клик по сердцу
   const toggleFav = () => {
     if (isFav) {
       if (id)fav.remove(id);
@@ -30,7 +29,6 @@ export const FilmPage = () => {
     if(id)setIsFav(fav.has(id)); 
   };
 
-  // Проверка и парсинг state
   let clientFilm: FilmPageInfo | null = null;
   if (state) {
     try {
@@ -39,18 +37,12 @@ export const FilmPage = () => {
       clientFilm = null;
     }
   }
-
-  // Фетчим и валидируем через CardItemServerSchema
   const { data, isLoading, isError } = useQuery({
-  queryKey: ["film", id],
-  queryFn: fetchMovie,
-  enabled: !clientFilm,
-});
-
-
+    queryKey: ["film", id],
+    queryFn: fetchMovie,
+    enabled: !clientFilm,
+  });
   const film = clientFilm || data;
-
-  
 
   if (isLoading) {
     return (
@@ -64,12 +56,7 @@ export const FilmPage = () => {
   if (isError) {
     return (
       <Container sx={{ py: 6 }}>
-        <Typography variant="h5" color="error" gutterBottom>
-          Не удалось найти фильм
-        </Typography>
-        <Typography color="text.secondary">
-          Попробуйте выбрать другой фильм или вернуться на главную страницу.
-        </Typography>
+        <LoadErrorMessage mainText={"Не удалось найти фильм"} recomendation={"Попробуйте выбрать другой фильм или вернуться на главную страницу."}/>
       </Container>
     );
   }
@@ -84,21 +71,44 @@ export const FilmPage = () => {
 
   return (
     <Container sx={{ py: 6 }}>
-      <Grid container spacing={4}>
+      <Grid container spacing={3}>
         <Grid size={{xs:12, md:4}} sx={{display:"flex", justifyContent:"center"}}>
-          <Box
-            component="img"
-            src={film.img || "/placeholder.jpg"}
-            alt={film.name}
-            sx={{ width: "100%", maxWidth:"300px", maxHeight:"425px", borderRadius: 2, boxShadow: 2 }}
-          />
+          {film.img ? (
+            <Box
+              component="img"
+              src={film.img}
+              alt={film.name}
+              sx={{
+                width: "100%",
+                maxWidth: "300px",
+                height: "425px",
+                borderRadius: 2,
+                boxShadow: 2,
+                backgroundColor: theme => theme.palette.grey[300],
+                objectFit: "cover",
+                display: "block",
+              }}
+            />
+          ) : (
+            <Box
+              sx={{
+                width: "100%",
+                maxWidth: "300px",
+                height: "425px",
+                borderRadius: 2,
+                boxShadow: 2,
+                backgroundColor: theme => theme.palette.grey[300],
+                display: "block",
+              }}
+            />
+          )}
+
         </Grid>
         <Grid size={{xs:12, md:8}}>
-          <Box display="flex" alignItems="baseline" gap={2} mb={1}>
-            <Typography variant="h4" gutterBottom>
+          <Box display="flex" alignItems="baseline" gap={2}>
+            <Typography variant="h4">
               {film.name}
             </Typography>
-            {/* КНОПКА ЛАЙКА */}
             <IconButton onClick={toggleFav} color={isFav ? "error" : "default"}>
               {isFav ? <FavoriteIcon /> : <FavoriteBorderIcon />}
             </IconButton>
@@ -109,7 +119,7 @@ export const FilmPage = () => {
             <Typography variant="body2" ml={1}>{film.rating.toFixed(1)}</Typography>
           </Box>
           {film.premiere && (
-            <Typography variant="body2" color="text.secondary" mb={2}>
+            <Typography variant="body2" color="text.secondary">
               Премьера: {new Date(film.premiere).toLocaleDateString("ru-RU")}
             </Typography>
           )}
