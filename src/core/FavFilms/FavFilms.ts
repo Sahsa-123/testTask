@@ -1,15 +1,13 @@
-// Vite-проект:
 const LS_KEY = import.meta.env.VITE_FAV_FILMS_KEY || "favouriteFilms";
 
 export class FavouriteFilms {
-  private map: Map<number, true>;
+  private map: Map<string, true>;
 
   constructor() {
     const raw = localStorage.getItem(LS_KEY);
     if (raw) {
-      // Читаем массив id из LS
       try {
-        const arr = JSON.parse(raw) as number[];
+        const arr = JSON.parse(raw) as string[];
         this.map = new Map(arr.map(id => [id, true]));
       } catch {
         this.map = new Map();
@@ -20,25 +18,25 @@ export class FavouriteFilms {
   }
 
   /** Добавить фильм в избранное */
-  add(id: number) {
-    this.map.set(id, true);
+  add(id: string | number) {
+    this.map.set(String(id), true);
     this.save();
   }
 
   /** Удалить фильм из избранного */
-  remove(id: number) {
-    this.map.delete(id);
+  remove(id: string | number) {
+    this.map.delete(String(id));
     this.save();
   }
 
   /** Получить массив id избранных фильмов */
-  get(): number[] {
+  get(): string[] {
     return Array.from(this.map.keys());
   }
 
   /** Проверить, есть ли фильм в избранном */
-  has(id: number) {
-    return this.map.has(id);
+  has(id: string | number) {
+    return this.map.has(String(id));
   }
 
   /** Сбросить избранное (например, если всё удалили) */
@@ -52,9 +50,18 @@ export class FavouriteFilms {
     if (this.map.size === 0) {
       localStorage.removeItem(LS_KEY);
     } else {
-      // Храним просто массив id (очень компактно)
       localStorage.setItem(LS_KEY, JSON.stringify(Array.from(this.map.keys())));
     }
+  }
+}
+
+export function getFavouriteIds(): string[] {
+  const raw = localStorage.getItem(import.meta.env.VITE_FAV_FILMS_KEY || "favouriteFilms");
+  if (!raw) return [];
+  try {
+    return JSON.parse(raw) as string[];
+  } catch {
+    return [];
   }
 }
 

@@ -1,7 +1,6 @@
 import { CardItemServerSchema, CardItemServerToClient, type CardItemClientType } from "../../../core/webAPI/CardResponse";
 
 type Filters = {
-  search: string;
   genres: string[];
   rating: string;
   years: string;
@@ -37,10 +36,6 @@ export const fetchMovies = async ({
   // Годы
   if (filters.years && /^\d{4}-\d{4}$/.test(filters.years)) {
     url.searchParams.set("year", filters.years);
-  }
-  // Поиск
-  if (filters.search) {
-    url.searchParams.set("name", filters.search);
   }
 
   const response = await fetch(url.toString(), {
